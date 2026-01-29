@@ -1,0 +1,160 @@
+import express from "express";
+import bcrypt from "bcryptjs";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import crypto from "crypto";
+import dotenv from "dotenv";
+
+dotenv.config();
+import jwt from "jsonwebtoken";
+
+
+const app = express();
+app.use(express.json());
+
+const client = new DynamoDBClient({ region: "ap-south-1" });
+const docClient = DynamoDBDocumentClient.from(client);
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
+
+/* -----------------------------
+   HEALTH CHECK
+----------------------------- */
+app.get("/health", (req, res) => {
+  res.json({ status: "auth-service running" });
+});
+
+/* -----------------------------
+   REGISTER USER
+----------------------------- */
+app.post("/register", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "email and password required"
+      });
+    }
+
+    // 1️⃣ check if email already exists
+    const existingUser = await docClient.send(
+      new ScanCommand({
+        TableName: "Users",
+        FilterExpression: "email = :email",
+        ExpressionAttributeValues: {
+          ":email": email
+        }
+      })
+    );
+
+    if (existingUser.Items.length > 0) {
+      return res.status(409).json({
+        message: "User already exists"
+      });
+    }
+
+    // 2️⃣ hash password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // 3️⃣ create user
+    const user = {
+      userId: crypto.randomUUID(),
+      email,
+      passwordHash,
+      role: "USER",
+      createdAt: new Date().toISOString()
+    };
+
+    await docClient.send(
+      new PutCommand({
+        TableName: "Users",
+        Item: user
+      })
+    );
+
+    return res.status(201).json({
+      message: "User registered successfully"
+    });
+
+  } catch (err) {
+    console.error("REGISTER ERROR:", err);
+    return res.status(500).json({
+      message: "Internal server error"
+    });
+  }
+});
+
+
+/* -----------------------------
+   LOGIN USER
+----------------------------- */
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "email and password required"
+      });
+    }
+
+    // 1️⃣ find user
+    const result = await docClient.send(
+      new ScanCommand({
+        TableName: "Users",
+        FilterExpression: "email = :email",
+        ExpressionAttributeValues: {
+          ":email": email
+        }
+      })
+    );
+
+    if (result.Items.length === 0) {
+      return res.status(401).json({
+        message: "Invalid credentials"
+      });
+    }
+
+    const user = result.Items[0];
+
+    // 2️⃣ compare password
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        message: "Invalid credentials"
+      });
+    }
+
+    // 3️⃣ create JWT
+    const token = jwt.sign(
+      {
+        userId: user.userId,
+        role: user.role
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h"
+      }
+    );
+
+    return res.status(200).json({
+      token
+    });
+
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    return res.status(500).json({
+      message: "Internal server error"
+    });
+  }
+});
+
+
+/* -----------------------------
+   SERVER
+----------------------------- */
+const PORT = 4000;
+app.listen(PORT, () => {
+  console.log(`Auth service running on port ${PORT}`);
+});

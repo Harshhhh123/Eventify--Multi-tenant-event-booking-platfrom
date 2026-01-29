@@ -1,0 +1,25 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.dev
+.env.production
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Build / temp
+dist/
+build/
+.tmp/
+.cache/

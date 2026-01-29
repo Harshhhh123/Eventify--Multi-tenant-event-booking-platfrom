@@ -52,7 +52,7 @@ if (method === "GET" && resource === "/events") {
 
 
   /* ----------------------------------
-     POST /events/{eventId}/reserve   resrve bookinh
+     POST /events/{eventId}/reserve   resrve booking
   ---------------------------------- */
   if (method === "POST" && resource === "/events/{eventId}/reserve") {
     const eventId = event.pathParameters?.eventId;
