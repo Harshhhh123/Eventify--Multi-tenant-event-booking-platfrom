@@ -1,53 +1,25 @@
-# Dependency directories
-node_modules/       # For Node.js projects
-venv/               # For Python virtual environments
-target/             # Common for Java/Maven projects (e.g., Spring Boot)
-build/              # Common build output directory
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Dependencies
-package-lock.json   # If you want to exclude npm lock file (optional - usually committed)
-yarn.lock          # If using Yarn
-
-# Environment & Config
+# Environment variables
+.env
 .env.local
-.env.*.local
-.env.production.local
+.env.dev
+.env.production
 
-# Environment variables and credentials
-.env                # Environment file (contains sensitive API keys, etc.)
-config/*.secret.exs # Example for Elixir/Phoenix, adjust for your framework
-*.key               # Private keys
-*.pem               # Certificate files
+# OS / Editor junk
+.DS_Store
+Thumbs.db
 
-# Runtime & Process Management
-dist/              # Compiled/bundled output
-.next/             # If using Next.js
-.nuxt/             # If using Nuxt
+# Logs
+logs/
+*.log
 
-# Compiled files and artifacts
-*.pyc               # Python compiled files
-*.o                 # C/C++ object files
-*.class             # Java class files
-*.swp               # Vim swap files
-
-# Testing
-coverage/          # Code coverage reports
-.nyc_output/       # NYC coverage
-
-# Logs and temporary files
-/logs/              # Directory for logs
-*.log               # All files ending in .log
-*.tmp               # Temporary files
-erl_crash.dump      # Erlang/Elixir crash dumps
-
-# OS and IDE specific files
-.DS_Store           # macOS file
-Thumbs.db           # Windows file
-.idea/              # IntelliJ IDE directory
-.vscode/            # VS Code directory (optional, only ignore user-specific settings)
-
-# Misc
+# Build / temp
+dist/
+build/
+.tmp/
 .cache/
-*.pid
-*.seed
-*.pid.lock

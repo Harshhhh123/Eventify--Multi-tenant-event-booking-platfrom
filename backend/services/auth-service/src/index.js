@@ -1,16 +1,19 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, PutCommand, ScanCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import crypto from "crypto";
 import dotenv from "dotenv";
-
+import { authenticate } from "./middleware/auth.js";
 dotenv.config();
+import cors from "cors";
+
 import jwt from "jsonwebtoken";
 
 
 const app = express();
 app.use(express.json());
+app.use(cors({ origin: "http://localhost:5173" }));
 
 const client = new DynamoDBClient({ region: "ap-south-1" });
 const docClient = DynamoDBDocumentClient.from(client);
@@ -22,6 +25,38 @@ console.log("JWT_SECRET:", process.env.JWT_SECRET);
 app.get("/health", (req, res) => {
   res.json({ status: "auth-service running" });
 });
+
+/* -----------------------------
+   request organizer role
+----------------------------- */
+app.post("/request-organizer", authenticate, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    await docClient.send(
+      new UpdateCommand({
+        TableName: "Users",
+        Key: { userId },
+        UpdateExpression: "SET #role = :org",
+        ExpressionAttributeNames: {
+          "#role": "role"
+        },
+        ExpressionAttributeValues: {
+          ":org": "ORGANIZER"
+        }
+      })
+    );
+
+    return res.json({
+      message: "Upgraded to organizer"
+    });
+
+  } catch (err) {
+    console.error("ORGANIZER REQUEST ERROR:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 /* -----------------------------
    REGISTER USER
@@ -88,6 +123,8 @@ app.post("/register", async (req, res) => {
 /* -----------------------------
    LOGIN USER
 ----------------------------- */
+
+
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -125,7 +162,11 @@ app.post("/login", async (req, res) => {
         message: "Invalid credentials"
       });
     }
-
+console.log("LOGIN USER:", {
+  userId: user.userId,
+  email: user.email,
+  role: user.role
+});
     // 3️⃣ create JWT
     const token = jwt.sign(
       {

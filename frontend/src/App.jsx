@@ -1,9 +1,75 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Login from "./auth/Login";
+import Register from "./auth/Register";
+import Home from "./pages/Home";
+import UserDashboard from "./pages/UserDashboard";
+import OrganizerDashboard from "./pages/OrganizerDashboard";
+
+import ProtectedRoute from "./router/ProtectedRoute";
+import PublicLayout from "./layouts/PublicLayout";
+import AppLayout from "./layouts/AppLayout";
+
 function App() {
   return (
-    <div>
-      <h1>Eventify</h1>
-      <p>Multi-tenant Event Booking Platform</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+
+        {/* PUBLIC */}
+        <Route
+          path="/login"
+          element={
+            <PublicLayout>
+              <Login />
+            </PublicLayout>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            <PublicLayout>
+              <Register />
+            </PublicLayout>
+          }
+        />
+
+        {/* PROTECTED APP */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute allowedRoles={["USER", "ORGANIZER"]}>
+              <AppLayout>
+                <Home />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["USER"]}>
+              <AppLayout>
+                <UserDashboard />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/organizer/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["ORGANIZER"]}>
+              <AppLayout>
+                <OrganizerDashboard />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+
+      </Routes>
+    </BrowserRouter>
   );
 }
 
