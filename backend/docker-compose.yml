@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  auth-service:
+    build: ./services/auth-service
+    container_name: eventify-auth
+    ports:
+      - "4000:4000"
+    environment:
+      JWT_SECRET: eventify_dev_jwt_secret_9283749827349827
+      AWS_REGION: ap-south-1
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    restart: unless-stopped
+
+  event-service:
+    build: ./services/event-service
+    container_name: eventify-event
+    ports:
+      - "5000:5000"
+    environment:
+      JWT_SECRET: eventify_dev_jwt_secret
+      AWS_REGION: ap-south-1
+      SQS_QUEUE_URL: https://sqs.ap-south-1.amazonaws.com/623753037953/eventify-booking-events-queue
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+    depends_on:
+      - auth-service
+    restart: unless-stopped
