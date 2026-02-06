@@ -1,0 +1,50 @@
+name: Auth Service CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/services/auth-service/**"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set image tag
+        id: vars
+        run: |
+          echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::623753037953:role/eventify-github-actions-ecr-role
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t eventify-auth-service:${IMAGE_TAG} \
+            backend/services/auth-service
+
+      - name: Tag image for ECR
+        run: |
+          docker tag eventify-auth-service:${IMAGE_TAG} \
+          623753037953.dkr.ecr.ap-south-1.amazonaws.com/eventify-auth-service:${IMAGE_TAG}
+
+      - name: Push image to ECR
+        run: |
+          docker push \
+          623753037953.dkr.ecr.ap-south-1.amazonaws.com/eventify-auth-service:${IMAGE_TAG}
