@@ -1,4 +1,54 @@
-name: Auth Service CI
+# name: Auth Service CI
+
+# on:
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - "backend/services/auth-service/**"
+
+# permissions:
+#   id-token: write
+#   contents: read
+
+# jobs:
+#   build-and-push:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v4
+
+#       - name: Set image tag
+#         id: vars
+#         run: |
+#           echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+#       - name: Configure AWS credentials (OIDC)
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           role-to-assume: arn:aws:iam::623753037953:role/eventify-github-actions-ecr-role
+#           aws-region: ap-south-1
+
+#       - name: Login to Amazon ECR
+#         uses: aws-actions/amazon-ecr-login@v2
+
+#       - name: Build Docker image
+#         run: |
+#           docker build \
+#             -t eventify-auth-service:${IMAGE_TAG} \
+#             backend/services/auth-service
+
+#       - name: Tag image for ECR
+#         run: |
+#           docker tag eventify-auth-service:${IMAGE_TAG} \
+#           623753037953.dkr.ecr.ap-south-1.amazonaws.com/eventify-auth-service:${IMAGE_TAG}
+
+#       - name: Push image to ECR
+#         run: |
+#           docker push \
+#           623753037953.dkr.ecr.ap-south-1.amazonaws.com/eventify-auth-service:${IMAGE_TAG}
+name: Deploy Auth Service to ECS
 
 on:
   push:
@@ -11,40 +61,52 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  AWS_REGION: ap-south-1
+  ECR_REPOSITORY: eventify-auth-service
+  ECS_CLUSTER: passionate-wolf-4uylhj
+  ECS_SERVICE: auth-service
+  TASK_DEFINITION: backend/services/auth-service/task-definition.json
+  CONTAINER_NAME: auth-service
+
 jobs:
-  build-and-push:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Set image tag
-        id: vars
-        run: |
-          echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::623753037953:role/eventify-github-actions-ecr-role
-          aws-region: ap-south-1
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build Docker image
+      - name: Build and push Docker image
+        id: build-image
         run: |
-          docker build \
-            -t eventify-auth-service:${IMAGE_TAG} \
-            backend/services/auth-service
+          IMAGE_TAG=${GITHUB_SHA}
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG backend/services/auth-service
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG 623753037953.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push 623753037953.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=623753037953.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Tag image for ECR
-        run: |
-          docker tag eventify-auth-service:${IMAGE_TAG} \
-          623753037953.dkr.ecr.ap-south-1.amazonaws.com/eventify-auth-service:${IMAGE_TAG}
+      - name: Render ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
 
-      - name: Push image to ECR
-        run: |
-          docker push \
-          623753037953.dkr.ecr.ap-south-1.amazonaws.com/eventify-auth-service:${IMAGE_TAG}
+      - name: Deploy ECS service
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ env.ECS_SERVICE }}
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          wait-for-service-stability: true
