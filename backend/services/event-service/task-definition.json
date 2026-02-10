@@ -1,0 +1,104 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:ap-south-1:623753037953:task-definition/eventify-event-task:2",
+    "containerDefinitions": [
+        {
+            "name": "event-service",
+            "image": "623753037953.dkr.ecr.ap-south-1.amazonaws.com/eventify-event-service:57edc3b",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "name": "event-service-5000-tcp",
+                    "containerPort": 5000,
+                    "hostPort": 5000,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "JWT_SECRET",
+                    "value": "eventify_dev_jwt_secret_9283749827349827"
+                },
+                {
+                    "name": "AWS_REGION",
+                    "value": "ap-south-1"
+                },
+                {
+                    "name": "SQS_QUEUE_URL",
+                    "value": "https://sqs.ap-south-1.amazonaws.com/623753037953/eventify-booking-events-queue"
+                }
+            ],
+            "environmentFiles": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "ulimits": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/eventify-event",
+                    "awslogs-create-group": "true",
+                    "awslogs-region": "ap-south-1",
+                    "awslogs-stream-prefix": "event"
+                },
+                "secretOptions": []
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "eventify-event-task",
+    "taskRoleArn": "arn:aws:iam::623753037953:role/eventify-event-task-role",
+    "executionRoleArn": "arn:aws:iam::623753037953:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "revision": 2,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "MANAGED_INSTANCES",
+        "FARGATE"
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512",
+    "runtimePlatform": {
+        "cpuArchitecture": "X86_64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "registeredAt": "2026-02-08T11:19:20.974Z",
+    "registeredBy": "arn:aws:iam::623753037953:root",
+    "enableFaultInjection": false,
+    "tags": []
+}

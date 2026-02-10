@@ -12,6 +12,14 @@ app.use("/events", eventsRouter);
 app.get("/health", (_, res) => {
   res.json({ status: "event-service running" });
 });
+app.get("/events/health", (_, res) => {
+  res.json({
+    service: "event-service",
+    status: "running",
+    version: "v3"
+  });
+});
+
 
 const PORT = 5000;
 app.listen(PORT, () => {
