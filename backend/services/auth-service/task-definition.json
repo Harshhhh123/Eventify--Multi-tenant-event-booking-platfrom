@@ -2,12 +2,12 @@
     
     "containerDefinitions": [
         {
-            "name": "auth-servicee",
-            "image": "623753037953.dkr.ecr.ap-south-1.amazonaws.com/eventify-auth-servicee:latest",
+            "name": "auth-service",
+            "image": "623753037953.dkr.ecr.ap-south-1.amazonaws.com/eventify-auth-service:latest",
             "cpu": 0,
             "portMappings": [
                 {
-                    "name": "auth-servicee-4000-tcp",
+                    "name": "auth-service-4000-tcp",
                     "containerPort": 4000,
                     "hostPort": 4000,
                     "protocol": "tcp",
