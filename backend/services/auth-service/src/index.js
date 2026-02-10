@@ -197,5 +197,5 @@ console.log("LOGIN USER:", {
 ----------------------------- */
 const PORT = 4000;
 app.listen(PORT, () => {
-  console.log(`Auth service running on port here ${PORT}`);
+  console.log(`Auth service running on port here now lesgssgo cicd ${PORT}`);
 });
