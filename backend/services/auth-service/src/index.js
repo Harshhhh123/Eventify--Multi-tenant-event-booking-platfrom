@@ -23,7 +23,7 @@ console.log("JWT_SECRET:", process.env.JWT_SECRET);
    HEALTH CHECK
 ----------------------------- */
 app.get("/health", (req, res) => {
-  res.json({ status: "auth-service running" });
+  res.json({ status: "auth-service running on port 4000" });
 });
 
 /* -----------------------------
