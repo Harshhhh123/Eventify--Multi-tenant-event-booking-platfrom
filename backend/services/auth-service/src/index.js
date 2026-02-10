@@ -84,7 +84,7 @@ app.post("/register", async (req, res) => {
 
     if (existingUser.Items.length > 0) {
       return res.status(409).json({
-        message: "User already exists in database"
+        message: "User  exists in database "
       });
     }
 
