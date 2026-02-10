@@ -67,7 +67,7 @@ app.post("/register", async (req, res) => {
 
     if (!email || !password) {
       return res.status(400).json({
-        message: "email and password required"
+        message: "email and password required yaar"
       });
     }
 
