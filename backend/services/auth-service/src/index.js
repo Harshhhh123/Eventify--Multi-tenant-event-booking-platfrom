@@ -48,7 +48,7 @@ app.post("/request-organizer", authenticate, async (req, res) => {
     );
 
     return res.json({
-      message: "Upgraded to organizer"
+      message: "Upgraded to organizer in DB"
     });
 
   } catch (err) {

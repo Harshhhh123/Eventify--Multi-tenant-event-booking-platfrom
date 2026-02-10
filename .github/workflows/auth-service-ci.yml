@@ -65,7 +65,7 @@ env:
   AWS_REGION: ap-south-1
   ECR_REPOSITORY: eventify-auth-service
   ECS_CLUSTER: passionate-wolf-4uylhj
-  ECS_SERVICE: aeventify-auth-task-service-9v0dv42a
+  ECS_SERVICE: eventify-auth-task-service-9v0dv42a
   TASK_DEFINITION: backend/services/auth-service/task-definition.json
   CONTAINER_NAME: auth-service
 
