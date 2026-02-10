@@ -37,9 +37,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-router.get("/events/health", (_, res) => {
-  res.json({ status: "events route healthy" });
-});
+
 /* GET /events/:eventId — PUBLIC */
 router.get("/:eventId", async (req, res) => {
   try {
