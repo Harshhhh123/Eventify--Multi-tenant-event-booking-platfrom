@@ -5,6 +5,7 @@ import Register from "./auth/Register";
 import Home from "./pages/Home";
 import UserDashboard from "./pages/UserDashboard";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
+import Landing from "./pages/Landing";
 
 import ProtectedRoute from "./router/ProtectedRoute";
 import PublicLayout from "./layouts/PublicLayout";
@@ -14,6 +15,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+<Route path="/" element={<Landing />} />
 
         {/* PUBLIC */}
         <Route
