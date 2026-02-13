@@ -1,0 +1,81 @@
+/* Global Reset - Fixes white borders and ensures dark background everywhere */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  background: #0a0a0f;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #0a0a0f;
+  color: #ffffff;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  margin: 0;
+  padding: 0;
+  background: #0a0a0f;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Remove default browser styles that might cause white borders */
+body > * {
+  background: transparent;
+}
+
+/* Ensure all containers have dark background */
+div,
+section,
+main,
+article,
+aside,
+header,
+footer,
+nav {
+  background: transparent;
+}
+
+/* Remove any potential white gaps */
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* Scrollbar styling (optional - dark theme) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.3);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.5);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.3) #0a0a0f;
+}

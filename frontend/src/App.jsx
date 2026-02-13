@@ -38,7 +38,7 @@ function App() {
 
         {/* PROTECTED APP */}
         <Route
-          path="/"
+          path="/dashboard"
           element={
             <ProtectedRoute allowedRoles={["USER", "ORGANIZER"]}>
               <AppLayout>
@@ -49,7 +49,7 @@ function App() {
         />
 
         <Route
-          path="/dashboard"
+          path="/user-dashboard"
           element={
             <ProtectedRoute allowedRoles={["USER"]}>
               <AppLayout>

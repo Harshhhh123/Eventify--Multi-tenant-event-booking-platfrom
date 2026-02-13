@@ -9,9 +9,9 @@
   --primary-soft: #eef2ff;
 
   /* Surfaces */
-  --bg: #f6f7fb;
+  --bg: #434446;
   --surface: #ffffff;
-  --border: #e5e7eb;
+  --border: #0b2250;
 
   /* Text */
   --text-main: #0f172a;
@@ -175,11 +175,12 @@ input {
   width: 420px;
   box-shadow: var(--shadow-md);
 }
-.navbar {
+/* .navbar {
   background: white;
   border-bottom: 1px solid var(--border);
   padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
+} */
+
